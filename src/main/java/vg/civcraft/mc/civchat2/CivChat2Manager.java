@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.scheduler.BukkitRunnable;
 import vg.civcraft.mc.civchat2.database.CivChatDAO;
 import vg.civcraft.mc.civchat2.event.GlobalChatEvent;
 import vg.civcraft.mc.civchat2.event.GroupChatEvent;
@@ -59,6 +61,8 @@ public class CivChat2Manager {
 
 	private static Map<UUID, String> customNames = new HashMap<>();
 
+	private static int slowmodeTime;
+
 	public CivChat2Manager(CivChat2 pluginInstance) {
 
 		instance = pluginInstance;
@@ -72,6 +76,24 @@ public class CivChat2Manager {
 		afkPlayers = new HashSet<>();
 		scoreboardHUD = new ScoreboardHUD();
 	}
+
+	/**
+	 * Used to set the slowmodeTime of global chat.
+	 * @param amount of seconds the slowmode should be set to.
+	 */
+	public static void setSlowmodeTime(Integer time) {
+		if(time < 0) return;
+		slowmodeTime = time;
+	}
+
+	/**
+	 * Used to fetch the slowmodeTime of global chat.
+	 * @return Returns amount of seconds the slowmode is set to.
+	 */
+	public static int getSlowmodeTime() {
+		return slowmodeTime;
+	}
+
 
 	/**
 	 * Gets the channel for player to player chat
@@ -345,6 +367,22 @@ public class CivChat2Manager {
 			if (mutedUntil > System.currentTimeMillis()) {
 				sender.sendMessage(String.format(ChatStrings.globalMuted, TextUtil.formatDuration(mutedUntil - System.currentTimeMillis())));
 				return;
+			}
+			if(slowmodeTime != 0 && !sender.hasPermission("civchat2.globalslowmode")) {
+				boolean slowmode = instance.getCivChat2SettingsManager().getChatSlowmodeTimer().getValue(sender);
+				long ticks = slowmodeTime * 20;
+				if(!slowmode) {
+					instance.getCivChat2SettingsManager().getChatSlowmodeTimer().setValue(sender, true);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(CivChat2.getInstance(), new Runnable() {
+						@Override
+						public void run() {
+							instance.getCivChat2SettingsManager().getChatSlowmodeTimer().setValue(sender, false);
+						}
+					}, ticks);
+				} else {
+					sender.sendMessage(ChatStrings.globalSlowmode);
+					return;
+				}
 			}
 		}
 		GroupChatEvent event = new GroupChatEvent(sender, group.getName(), message);

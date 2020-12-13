@@ -87,6 +87,13 @@ commands:
     max-args: 3
     permission: civchat2.globalmute
     player-only: false
+  globalslowmode:
+    usage: /globalslowmode <set|get|off> [time]
+    description: Applies, gets, or disables a slowmode timer on global chat.
+    min-args: 1
+    max-args: 2
+    permission: civchat2.globalslowmode
+    player-only: false
   whoami:
     aliases:
     - who
@@ -102,4 +109,7 @@ permissions:
     default: op
   civchat2.globalmute:
     description: Gives access to the global mute command
+    default: op
+  civchat2.globalslowmode:
+    description: Permits setting & bypassing global slowmode.
     default: op

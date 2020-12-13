@@ -53,4 +53,6 @@ public class ChatStrings {
 	public final static String chatGroupMessage = ChatColor.GRAY + "[%s] %s: " + ChatColor.WHITE + "%s";
 	
 	public final static String globalMuted = ChatColor.RED + "You are muted from global chats for %s";
+
+	public final static String globalSlowmode = ChatColor.RED + "Slowmode is enabled. Wait a few seconds and try again.";
 }

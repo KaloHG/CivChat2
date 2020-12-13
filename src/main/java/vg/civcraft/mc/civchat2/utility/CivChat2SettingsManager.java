@@ -21,6 +21,7 @@ public class CivChat2SettingsManager {
 	private BooleanSetting showChatGroup;
 	private DisplayLocationSetting chatGroupLocation;
 	private LongSetting chatUnmuteTimer;
+	private BooleanSetting chatSlowmodeTimer;
 
 	public CivChat2SettingsManager() {
 		initSettings();
@@ -61,10 +62,18 @@ public class CivChat2SettingsManager {
 		
 		chatUnmuteTimer = new LongSetting(CivChat2.getInstance(), 0L, "Global chat mute", "chatGlobalMuteTimer");
 		PlayerSettingAPI.registerSetting(chatUnmuteTimer, null);
+
+		chatSlowmodeTimer = new BooleanSetting(CivChat2.getInstance(), false, "Chat Slowmode Timer", "chatSlowmodeTimer",
+				"Boolean utilized for the Global Slowmode System...");
+		PlayerSettingAPI.registerSetting(chatSlowmodeTimer, null);
 	}
 	
 	public LongSetting getGlobalChatMuteSetting() {
 		return chatUnmuteTimer;
+	}
+
+	public BooleanSetting getChatSlowmodeTimer() {
+		return chatSlowmodeTimer;
 	}
 
 	public boolean getShowJoins(UUID uuid) {
